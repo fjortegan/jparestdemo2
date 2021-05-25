@@ -15,11 +15,13 @@ public class Pesado {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
+    private int age;
 
     public Pesado() {
     }
 
-    public Pesado(String name) {
+    public Pesado(String name, int age) {
         this.name = name;
+        this.age = age;
     }
 }
