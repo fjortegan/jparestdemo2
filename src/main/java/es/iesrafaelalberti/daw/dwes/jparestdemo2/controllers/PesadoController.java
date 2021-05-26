@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @RestController
@@ -22,11 +23,9 @@ public class PesadoController {
 
     @GetMapping("/pesados/detail")
     public ResponseEntity<Object> pesadoDetail(@RequestParam("id") Long id) {
-        Optional<Pesado> pesado = pesadoRepository.findById(id);
-        if(pesado.isPresent()) {
-            return new ResponseEntity<>(pesado.get(), HttpStatus.OK);
-        }
-        return ResponseEntity.notFound().build();
+        Pesado pesado = pesadoRepository.findById(id)
+                                        .orElseThrow(() -> new EntityNotFoundException());
+        return new ResponseEntity<>(pesado, HttpStatus.OK);
     }
 
     @PostMapping("/pesados")
@@ -42,14 +41,23 @@ public class PesadoController {
         pesadoRepository.save(nuevoPesado);
         return new ResponseEntity<>(nuevoPesado, HttpStatus.OK);
     }
+
+
+    @PutMapping("/pesados/{id}")
+    public ResponseEntity<?> pesadoUpdate(@PathVariable("id") Long id,
+                                          @RequestBody Pesado nuevoPesado) {
+        pesadoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+        //nuevoPesado.setId(id);
+        pesadoRepository.save(nuevoPesado);
+        return new ResponseEntity<>(nuevoPesado, HttpStatus.OK);
+    }
+
+
     @DeleteMapping("/pesados/{id}")
     public ResponseEntity<?> pesadoDelete(@PathVariable("id") Long id) {
-        Optional<Pesado> oldPesado = pesadoRepository.findById(id);
-        if(oldPesado.isPresent()) {
-            pesadoRepository.delete(oldPesado.get());
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        //return ResponseEntity.notFound().build();
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Pesado oldPesado = pesadoRepository.findById(id)
+                                           .orElseThrow(() -> new EntityNotFoundException());
+        pesadoRepository.delete(oldPesado);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
