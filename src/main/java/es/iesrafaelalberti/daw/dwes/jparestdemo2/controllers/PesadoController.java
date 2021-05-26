@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 public class PesadoController {
     @Autowired
@@ -16,6 +18,15 @@ public class PesadoController {
     @GetMapping("/pesados")
     public ResponseEntity<Object> pesadoList() {
         return new ResponseEntity<>(pesadoRepository.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/pesados/detail")
+    public ResponseEntity<Object> pesadoDetail(@RequestParam("id") Long id) {
+        Optional<Pesado> pesado = pesadoRepository.findById(id);
+        if(pesado.isPresent()) {
+            return new ResponseEntity<>(pesado.get(), HttpStatus.OK);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/pesados")
@@ -30,5 +41,15 @@ public class PesadoController {
     public ResponseEntity<?> pesadoAdd(@RequestBody Pesado nuevoPesado) {
         pesadoRepository.save(nuevoPesado);
         return new ResponseEntity<>(nuevoPesado, HttpStatus.OK);
+    }
+    @DeleteMapping("/pesados/{id}")
+    public ResponseEntity<?> pesadoDelete(@PathVariable("id") Long id) {
+        Optional<Pesado> oldPesado = pesadoRepository.findById(id);
+        if(oldPesado.isPresent()) {
+            pesadoRepository.delete(oldPesado.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        //return ResponseEntity.notFound().build();
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
