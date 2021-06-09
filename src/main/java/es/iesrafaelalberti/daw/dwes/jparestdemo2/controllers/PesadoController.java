@@ -31,7 +31,7 @@ public class PesadoController {
     @PostMapping("/pesados")
     public ResponseEntity<?> pesadoAdd(@RequestParam("name") String name,
                                        @RequestParam("age") int age) {
-        Pesado nuevoPesado = new Pesado(name, age);
+        Pesado nuevoPesado = new Pesado(name, age, null);
         pesadoRepository.save(nuevoPesado);
         return new ResponseEntity<>(nuevoPesado, HttpStatus.OK);
     }
